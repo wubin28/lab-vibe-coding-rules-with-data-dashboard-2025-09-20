@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic AI Performance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .data-summary {
+            font-size: 1rem;
+            color: #555;
+            background-color: rgba(255,255,255,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+
+        .chart-title {
+            font-size: 1.4rem;
+            color: #1976d2;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (min-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .chart-card:first-child {
+                grid-column: 1 / -1;
+            }
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .chart-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .chart-card:first-child {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agentic AI Performance Data Dashboard</h1>
+            <div class="subtitle">Analysis of 80 AI Agents from Dataset 2025</div>
+            <div class="data-summary">
+                Data Processing Summary: 80 records processed from Agentic AI Performance Dataset
+                <br>
+                Analysis Date: December 2024
+            </div>
+        </header>
+
+        <main class="chart-grid">
+            <div class="chart-card">
+                <h2 class="chart-title">Top 3 Agent Types by Multimodal Capability %</h2>
+                <div class="chart-container">
+                    <canvas id="agentTypeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2 class="chart-title">Top 3 Model Architectures by Multimodal Capability %</h2>
+                <div class="chart-container">
+                    <canvas id="modelArchChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2 class="chart-title">Top 3 Task Categories by Median Bias Detection Score</h2>
+                <div class="chart-container">
+                    <canvas id="taskCategoryChart"></canvas>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            Data Source: first-80-rows-agentic_ai_performance_dataset_20250622.xlsx
+            <br>
+            Generated with Python and Chart.js | Mobile-Optimized Dashboard
+        </footer>
+    </div>
+
+    <script>
+        // Dashboard data from Python analysis
+        const dashboardData = {
+            "totalRecords": 80,
+            "processedRecords": 80,
+            "agentTypeData": {
+                "labels": ["Research Assistant", "Document Processor", "Sales Assistant"],
+                "values": [60.0, 33.33, 28.57]
+            },
+            "modelArchitectureData": {
+                "labels": ["GPT-4o", "CodeT5+", "Transformer-XL"],
+                "values": [37.5, 33.33, 20.0]
+            },
+            "taskCategoryData": {
+                "labels": ["Communication", "Research & Summarization", "Decision Making"],
+                "values": [0.8214, 0.7854, 0.7816]
+            }
+        };
+
+        // Chart colors
+        const colors = {
+            blue: ['#e3f2fd', '#bbdefb', '#90caf9'],
+            green: ['#e8f5e8', '#c8e6c9', '#a5d6a7'],
+            orange: ['#fff3e0', '#ffe0b2', '#ffcc80']
+        };
+
+        // Agent Type Chart (Horizontal Bar)
+        const agentTypeCtx = document.getElementById('agentTypeChart').getContext('2d');
+        new Chart(agentTypeCtx, {
+            type: 'bar',
+            data: {
+                labels: dashboardData.agentTypeData.labels,
+                datasets: [{
+                    label: 'Multimodal Capability %',
+                    data: dashboardData.agentTypeData.values,
+                    backgroundColor: colors.blue,
+                    borderColor: '#1976d2',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 70,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.x + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Model Architecture Chart (Horizontal Bar)
+        const modelArchCtx = document.getElementById('modelArchChart').getContext('2d');
+        new Chart(modelArchCtx, {
+            type: 'bar',
+            data: {
+                labels: dashboardData.modelArchitectureData.labels,
+                datasets: [{
+                    label: 'Multimodal Capability %',
+                    data: dashboardData.modelArchitectureData.values,
+                    backgroundColor: colors.green,
+                    borderColor: '#388e3c',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 50,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.x + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Task Category Chart (Vertical Bar)
+        const taskCategoryCtx = document.getElementById('taskCategoryChart').getContext('2d');
+        new Chart(taskCategoryCtx, {
+            type: 'bar',
+            data: {
+                labels: dashboardData.taskCategoryData.labels,
+                datasets: [{
+                    label: 'Median Bias Detection Score',
+                    data: dashboardData.taskCategoryData.values,
+                    backgroundColor: colors.orange,
+                    borderColor: '#f57c00',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 0.75,
+                        max: 0.85,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(4);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Score: ' + context.parsed.y.toFixed(4);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

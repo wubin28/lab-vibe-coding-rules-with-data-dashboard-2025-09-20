@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ide__executeCode",
+      "Bash(python:*)",
+      "Bash(start data-dashboard.html)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
